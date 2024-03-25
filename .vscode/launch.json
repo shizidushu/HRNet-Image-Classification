@@ -11,7 +11,9 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
-            "args": ["--cfg", "experiments/cls_hrnet_w18_small_v1_sgd_lr5e-2_wd1e-4_bs32_x100.yaml"]
+            "args": ["--cfg", "experiments/cls_hrnet_w18_small_v1_sgd_lr5e-2_wd1e-4_bs32_x100_OneImage.yaml", "--dataDir", "./data/One-Image/1"] // training
+            // "args": ["--cfg", "experiments/cls_hrnet_w18_small_v1_sgd_lr5e-2_wd1e-4_bs32_x100_OneImage.yaml", "--testModel", "output/One-Image/cls_hrnet_w18_small_v1_sgd_lr5e-2_wd1e-4_bs32_x100_OneImage/1/model_best.pth.tar", "--dataDir", "./data/One-Image/1"] // testing
+            // "args": ["--cfg", "experiments/cls_hrnet_w18_small_v1_sgd_lr5e-2_wd1e-4_bs32_x100.yaml"]
         }
     ]
 }

@@ -22,3 +22,5 @@ python tools/valid_custom.py --cfg experiments/cls_hrnet_w18_small_v1_sgd_lr5e-2
 
 python tools/valid_custom.py --cfg experiments/cls_hrnet_w18_small_v1_sgd_lr5e-2_wd1e-4_bs32_x100_OneImage.yaml --testModel output/One-Image/cls_hrnet_w18_small_v1_sgd_lr5e-2_wd1e-4_bs32_x100_OneImage/2/model_best.pth.tar --dataDir ./data/One-Image/2
 ```
+
+Result: It overfits

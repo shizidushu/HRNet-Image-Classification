@@ -127,6 +127,13 @@ def main():
             logger.info("=> loaded checkpoint (epoch {})"
                         .format(checkpoint['epoch']))
             best_model = True
+    
+    
+    weight_path = "./hrnet_w18_small_model_v1.pth"
+    pretrained_weights = torch.load(weight_path)
+    pretrained_weights.pop("classifier.weight")
+    pretrained_weights.pop("classifier.bias")
+    model.module.load_state_dict(pretrained_weights, strict=False)
             
     if isinstance(config.TRAIN.LR_STEP, list):
         lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
@@ -178,13 +185,13 @@ def main():
     )
 
     for epoch in range(last_epoch, config.TRAIN.END_EPOCH):
-        lr_scheduler.step()
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
               final_output_dir, tb_log_dir, writer_dict)
         # evaluate on validation set
         perf_indicator = validate(config, valid_loader, model, criterion,
                                   final_output_dir, tb_log_dir, writer_dict)
+        lr_scheduler.step()
 
         if perf_indicator > best_perf:
             best_perf = perf_indicator

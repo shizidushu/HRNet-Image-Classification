@@ -26,6 +26,7 @@ _C.PRINT_FREQ = 20
 _C.AUTO_RESUME = False
 _C.PIN_MEMORY = True
 _C.RANK = 0
+_C.CLASSES = 1000
 
 # Cudnn related params
 _C.CUDNN = CN()

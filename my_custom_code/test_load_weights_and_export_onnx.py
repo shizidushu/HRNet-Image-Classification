@@ -48,13 +48,14 @@ def main():
     torch.backends.cudnn.deterministic = config.CUDNN.DETERMINISTIC
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
     
-    weight_path = "./hrnet_w18_small_model_v1.pth"
+    
 
     model = eval('models.'+config.MODEL.NAME+'.get_cls_net')(config)
     
     model = torch.nn.DataParallel(model, device_ids=[0]).cuda()
     model.eval()
     
+    weight_path = "./hrnet_w18_small_model_v1.pth"
     model.module.load_state_dict(torch.load(weight_path))
     
     if args.exportONNX:

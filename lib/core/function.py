@@ -51,26 +51,42 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         # measure accuracy and record loss
         losses.update(loss.item(), input.size(0))
 
-        prec1, prec5 = accuracy(output, target, (1, 5))
 
-        top1.update(prec1[0], input.size(0))
-        top5.update(prec5[0], input.size(0))
+        if config.CLASSES == 1000:
+            prec1, prec5 = accuracy(output, target, (1, 5))
+
+            top1.update(prec1[0], input.size(0))
+            top5.update(prec5[0], input.size(0))
+        else:
+            prec1 = accuracy(output, target, (1, ))[0]
+            top1.update(prec1[0], input.size(0))
 
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
 
         if i % config.PRINT_FREQ == 0:
-            msg = 'Epoch: [{0}][{1}/{2}]\t' \
-                  'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
-                  'Speed {speed:.1f} samples/s\t' \
-                  'Data {data_time.val:.3f}s ({data_time.avg:.3f}s)\t' \
-                  'Loss {loss.val:.5f} ({loss.avg:.5f})\t' \
-                  'Accuracy@1 {top1.val:.3f} ({top1.avg:.3f})\t' \
-                  'Accuracy@5 {top5.val:.3f} ({top5.avg:.3f})\t'.format(
-                      epoch, i, len(train_loader), batch_time=batch_time,
-                      speed=input.size(0)/batch_time.val,
-                      data_time=data_time, loss=losses, top1=top1, top5=top5)
+            if config.CLASSES == 1000:
+                msg = 'Epoch: [{0}][{1}/{2}]\t' \
+                    'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
+                    'Speed {speed:.1f} samples/s\t' \
+                    'Data {data_time.val:.3f}s ({data_time.avg:.3f}s)\t' \
+                    'Loss {loss.val:.5f} ({loss.avg:.5f})\t' \
+                    'Accuracy@1 {top1.val:.3f} ({top1.avg:.3f})\t' \
+                    'Accuracy@5 {top5.val:.3f} ({top5.avg:.3f})\t'.format(
+                        epoch, i, len(train_loader), batch_time=batch_time,
+                        speed=input.size(0)/batch_time.val,
+                        data_time=data_time, loss=losses, top1=top1, top5=top5)
+            else:
+                msg = 'Epoch: [{0}][{1}/{2}]\t' \
+                    'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
+                    'Speed {speed:.1f} samples/s\t' \
+                    'Data {data_time.val:.3f}s ({data_time.avg:.3f}s)\t' \
+                    'Loss {loss.val:.5f} ({loss.avg:.5f})\t' \
+                    'Accuracy@1 {top1.val:.3f} ({top1.avg:.3f})\t'.format(
+                        epoch, i, len(train_loader), batch_time=batch_time,
+                        speed=input.size(0)/batch_time.val,
+                        data_time=data_time, loss=losses, top1=top1)
             logger.info(msg)
 
             if writer_dict:
@@ -103,22 +119,34 @@ def validate(config, val_loader, model, criterion, output_dir, tb_log_dir,
 
             # measure accuracy and record loss
             losses.update(loss.item(), input.size(0))
-            prec1, prec5 = accuracy(output, target, (1, 5))
-            top1.update(prec1[0], input.size(0))
-            top5.update(prec5[0], input.size(0))
+            if config.CLASSES == 1000:
+                prec1, prec5 = accuracy(output, target, (1, 5))
+                top1.update(prec1[0], input.size(0))
+                top5.update(prec5[0], input.size(0))
+            else:
+                prec1 = accuracy(output, target, (1, ))[0]
+                top1.update(prec1[0], input.size(0))
 
             # measure elapsed time
             batch_time.update(time.time() - end)
             end = time.time()
 
-        msg = 'Test: Time {batch_time.avg:.3f}\t' \
-              'Loss {loss.avg:.4f}\t' \
-              'Error@1 {error1:.3f}\t' \
-              'Error@5 {error5:.3f}\t' \
-              'Accuracy@1 {top1.avg:.3f}\t' \
-              'Accuracy@5 {top5.avg:.3f}\t'.format(
-                  batch_time=batch_time, loss=losses, top1=top1, top5=top5,
-                  error1=100-top1.avg, error5=100-top5.avg)
+        if config.CLASSES == 1000:
+            msg = 'Test: Time {batch_time.avg:.3f}\t' \
+                'Loss {loss.avg:.4f}\t' \
+                'Error@1 {error1:.3f}\t' \
+                'Error@5 {error5:.3f}\t' \
+                'Accuracy@1 {top1.avg:.3f}\t' \
+                'Accuracy@5 {top5.avg:.3f}\t'.format(
+                    batch_time=batch_time, loss=losses, top1=top1, top5=top5,
+                    error1=100-top1.avg, error5=100-top5.avg)
+        else:
+            msg = 'Test: Time {batch_time.avg:.3f}\t' \
+                'Loss {loss.avg:.4f}\t' \
+                'Error@1 {error1:.3f}\t' \
+                'Accuracy@1 {top1.avg:.3f}\t'.format(
+                    batch_time=batch_time, loss=losses, top1=top1,
+                    error1=100-top1.avg)
         logger.info(msg)
 
         if writer_dict:
